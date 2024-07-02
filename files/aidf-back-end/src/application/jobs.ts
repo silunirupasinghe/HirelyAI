@@ -1,51 +1,43 @@
 import express from "express";
 import { Request, Response } from "express";
-import jobs from "../infrastructure/jobs";
+import Job from "../infrastructure/schemas/job";
 const app = express();
+
 app.use(express.json());
 
-export const getAllJobs = (req: Request, res: Response) => {
-    return res.json(jobs);
+export const getAllJobs = async (req: Request, res: Response) => {
+
+    const jobs = await Job.find();
+    return res.status(200).json(jobs);
 }
 
-export const createJob = (req: Request, res: Response) => {
-    const job=req.body;
-    if (job.title) {
-        if(!(typeof job.title=== "string" && typeof job._id==="string" && typeof job.location==="string" && job.type==="string")){
-            return res.status(400).send()
-        }
-        
-    }
-    console.log(req.body)
-    jobs.push(req.body)
+export const createJob = async (req: Request, res: Response) => {
+    const job = req.body;
+    await Job.create(job);
     return res.status(200).send();
 }
-export const getJobById = (req: Request, res: Response) => {
-    const job = jobs.find(el => el._id == req.params._id);
+export const getJobById = async (req: Request, res: Response) => {
+    const job = await Job.findById(req.params._id)
     if (!job) {
         return res.status(404).send()
     }
     return res.json(job);
 }
 
-export const deleteJobById = (req: Request, res: Response) => {
-    const indexToRemove = jobs.findIndex(el => el._id == req.params._id)
-    if (indexToRemove === -1) {
+export const deleteJobById = async (req: Request, res: Response) => {
+    const job = await Job.findByIdAndDelete(req.params._id)
+    if (!job) {
         return res.status(404).send()
     }
-    jobs.splice(indexToRemove, 1)
     return res.status(204).send();
 }
 
-export const updateJob = (req: Request, res: Response) => {
-    const indexToUpdate = jobs.findIndex(el => el._id == req.params._id)
-    if (indexToUpdate === -1) {
+export const updateJob = async (req: Request, res: Response) => {
+    const jobToUpdate = await Job.findByIdAndUpdate(req.params._id)
+    if (!jobToUpdate) {
         return res.status(404).send()
     }
-    jobs[indexToUpdate].type = req.body.type;
-    jobs[indexToUpdate].title = req.body.title;
-    jobs[indexToUpdate].location = req.body.location
+    await Job.findByIdAndUpdate(req.params._id, {title: req.body.title, location: req.body.location, type: req.body.type, description: req.body.description})
     return res.status(204).send();
 }
 
-app.get("/jobs", getAllJobs).post("/jobs", createJob).get("/jobs/:_id", getJobById).delete("/jobs/:_id", deleteJobById).put("/jobs/:_id", updateJob)
