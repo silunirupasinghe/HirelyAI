@@ -4,9 +4,10 @@ import jobsRouter from "./api/jobs";
 import "dotenv/config"
 import { connectDB } from "./infrastructure/db";
 import jobApplicationRoute from "./api/jobApplication";
+import cors from "cors";
 const app = express();
 app.use(express.json());
-
+app.use(cors());
 
 app.use("/jobs", jobsRouter )
 app.use("/jobApplication", jobApplicationRoute)
