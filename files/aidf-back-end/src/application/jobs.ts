@@ -6,13 +6,22 @@ const app = express();
 app.use(express.json());
 
 export const getAllJobs = async (req: Request, res: Response) => {
-
+    try {
+        const jobs = await Job.find();
+        return res.status(200).json(jobs);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send();
+    }
     const jobs = await Job.find();
     return res.status(200).json(jobs);
 }
 
 export const createJob = async (req: Request, res: Response) => {
     const job = req.body;
+    if (typeof job.title == "undefined" || typeof job.location == "undefined" || typeof job.description == "undefined" || typeof job.type == "undefined") {
+        return res.status(400).send()
+    }
     await Job.create(job);
     return res.status(200).send();
 }
@@ -37,7 +46,7 @@ export const updateJob = async (req: Request, res: Response) => {
     if (!jobToUpdate) {
         return res.status(404).send()
     }
-    await Job.findByIdAndUpdate(req.params._id, {title: req.body.title, location: req.body.location, type: req.body.type, description: req.body.description})
+    await Job.findByIdAndUpdate(req.params._id, { title: req.body.title, location: req.body.location, type: req.body.type, description: req.body.description })
     return res.status(204).send();
 }
 

@@ -1,6 +1,6 @@
 
 export const getJobApllicationsForJob = async (id) => {
-    const res = await fetch(`http://localhost:8000/jobApplications?jobId=${id}`, {
+    const res = await fetch(`http://localhost:8000/jobApplication?jobId=${id}`, {
       method: "GET",
     });
     const data = await res.json();
@@ -9,7 +9,7 @@ export const getJobApllicationsForJob = async (id) => {
   
   export const getJobApplicationById = async (id) => {
   
-    const res = await fetch(`http://localhost:8000/jobApplications/${id}`, {
+    const res = await fetch(`http://localhost:8000/jobApplication/${id}`, {
       method: "GET",
     });
     const data = await res.json();
@@ -22,7 +22,7 @@ export const getJobApllicationsForJob = async (id) => {
     job,
     answers,
   }) => {
-    await fetch("http://localhost:8000/jobApplications", {
+    await fetch("http://localhost:8000/jobApplication", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -25,6 +25,7 @@ export const getAllApplication = async (req: Request, res: Response, next: NextF
 
 export const createJobApplication = async (req: Request, res: Response) => {
     const jobApplication = req.body
+ 
     await JobApplication.create(jobApplication)
     return res.status(200).send();
 }
