@@ -8,10 +8,10 @@ app.use(express.json())
 
 export const getAllApplication = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const {jobid} = req.query;
-        
-        if(jobid){
-            const jobApplication= await JobApplication.find({job: jobid});
+        const { jobid } = req.query;
+
+        if (jobid) {
+            const jobApplication = await JobApplication.find({ job: jobid });
             return res.status(200).json(jobApplication)
         }
         const jobApplication = await JobApplication.find().populate("job").exec();
@@ -24,33 +24,57 @@ export const getAllApplication = async (req: Request, res: Response, next: NextF
 }
 
 export const createJobApplication = async (req: Request, res: Response) => {
-    const jobApplication = req.body
- 
-    await JobApplication.create(jobApplication)
-    return res.status(200).send();
+    try {
+        const jobApplication = req.body
+
+        await JobApplication.create(jobApplication)
+        return res.status(200).send();
+    } catch (error) {
+        console.log(error)
+        return res.status(500).send()
+    }
+
 }
 
 export const getJobApplicationById = async (req: Request, res: Response) => {
-    const jobApplication = await JobApplication.findById(req.params._id)
-    if (!jobApplication) {
-        return res.status(404).send()
+    try {
+        const jobApplication = await JobApplication.findById(req.params._id)
+        if (!jobApplication) {
+            return res.status(404).send()
+        }
+        return res.status(200).json(jobApplication)
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).send()
     }
-    return res.status(200).json(jobApplication)
 }
 
 export const deleteJobApplicationById = async (req: Request, res: Response) => {
-    const job = await JobApplication.findByIdAndDelete(req.params._id)
-    if (!JobApplication) {
-        return res.status(404).send()
+    try {
+        const job = await JobApplication.findByIdAndDelete(req.params._id)
+        if (!JobApplication) {
+            return res.status(404).send()
+        }
+        return res.status(204).send();
+    } catch (error) {
+        console.log(error)
+        return res.status(500).send()
     }
-    return res.status(204).send();
 }
 
+
 export const updateJobApplication = async (req: Request, res: Response) => {
-    const jobApplication = await JobApplication.findByIdAndUpdate(req.params._id);
-    if (!JobApplication) {
-        return res.status(404).send()
+    try {
+        const jobApplication = await JobApplication.findByIdAndUpdate(req.params._id);
+        if (!JobApplication) {
+            return res.status(404).send()
+        }
+        await JobApplication.findByIdAndUpdate(req.params._id, { userId: req.body.userId, fullName: req.body.fullName, answers: req.body.answers, rating: req.body.ratings })
+        return res.status(204).send();
+    } catch (error) {
+        console.log(error)
+        return res.status(500).send()
     }
-    await JobApplication.findByIdAndUpdate(req.params._id, { userId: req.body.userId, fullName: req.body.fullName, answers: req.body.answers, rating: req.body.ratings })
-    return res.status(204).send();
+
 }
